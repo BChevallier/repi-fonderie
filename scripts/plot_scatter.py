@@ -61,7 +61,7 @@ for q, (table_id, label) in QUANTITIES.items():
             ax.scatter(x, v, s=110, color=col, zorder=3)
             if name.startswith("BFSP"):
                 vals = raw[q][int(name.split()[1])]
-                ax.scatter([x - 0.15, x, x + 0.15], vals, s=28, marker="^", color=col,
+                ax.scatter([x - 0.15, x, x + 0.15], vals, s=28, marker=".", color=col,
                            alpha=0.7, zorder=4)
         ax.set_xticks(range(len(pts)), [n for n, _ in pts], rotation=40, ha="right",
                       color=c["fg"], fontsize=11)
@@ -75,6 +75,7 @@ for q, (table_id, label) in QUANTITIES.items():
         for side in ("left", "bottom"):
             ax.spines[side].set_color(c["muted"])
         ax.set_xlim(-0.6, len(pts) - 0.4)
+        ax.margins(y=0.1)
         handles = [Line2D([], [], marker="o", linestyle="", color=col, label=g)
                    for g, col in COLORS.items()]
         handles += [Line2D([], [], marker="o", linestyle="", color=c["muted"], markersize=8,
