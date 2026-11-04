@@ -120,13 +120,13 @@ for out_name, table_id, label, keep in PLOTS:
             ax.spines[side].set_color(c["muted"])
         ax.set_xlim(-0.6, len(pts) - 0.4)
         ax.margins(y=0.1)
-        handles = [Line2D([], [], color=col, linewidth=3.5, label=g)
-                   for g, col in COLORS.items() if keep is None or g in keep]
-        # (label, dot position along the line, half width, colour, alpha)
-        sym = [("moyenne", None, 0.5, COLORS["BFSP"]), ("fond", 0.0, 0.3, c["muted"]),
-               ("milieu", 0.5, 0.3, c["muted"]), ("devant", 1.0, 0.3, c["muted"])]
-        hmap = {}
-        for label, dot_pos, half, color in sym:
+        # legend glyphs are drawn exactly like the plot lines (same weight, same alpha)
+        entries = [(g, None, 0.5, col) for g, col in COLORS.items()
+                   if keep is None or g in keep]
+        entries += [("fond", 0.0, 0.3, c["muted"]), ("milieu", 0.5, 0.3, c["muted"]),
+                    ("devant", 1.0, 0.3, c["muted"])]
+        handles, hmap = [], {}
+        for label, dot_pos, half, color in entries:
             h = Line2D([], [], label=label)
             handles.append(h)
             hmap[h] = MeasureHandler(dot_pos, half=half, color=color)
