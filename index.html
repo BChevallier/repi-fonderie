@@ -62,7 +62,10 @@
        stacked figures get the same size as single ones */
     .reveal .r-stack { width: 100%; justify-items: center; }
     .reveal .r-stack img { width: 905px; max-width: none; max-height: none; margin: 0; }
-    .empty-table td, .empty-table th { height: 1.9em; width: 25%; }
+    .empty-table td, .empty-table th { height: 1.6em; width: 22%; }
+    .empty-table th:first-child, .empty-table td:first-child { width: 34%; white-space: nowrap; }
+    /* vertical divider between column 1 and 2 */
+    .empty-table th:first-child, .empty-table td:first-child { border-right: 1px solid rgba(255,255,255,0.25); }
     .reveal a.table-link { display: block; color: inherit; text-decoration: none; }
     .reveal a.table-link:hover table { filter: brightness(1.25); }
     .title-slide .date { margin-top: auto; margin-bottom: 0.5em; font-size: 0.5em; color: var(--muted); }
@@ -238,11 +241,11 @@
         <table>
           <thead><tr><th>&nbsp;</th><th></th><th></th><th></th></tr></thead>
           <tbody>
-            <tr><td>&nbsp;</td><td></td><td></td><td></td></tr>
-            <tr><td>&nbsp;</td><td></td><td></td><td></td></tr>
-            <tr><td>&nbsp;</td><td></td><td></td><td></td></tr>
-            <tr><td>&nbsp;</td><td></td><td></td><td></td></tr>
-            <tr><td>&nbsp;</td><td></td><td></td><td></td></tr>
+            <tr><td>écologie</td><td></td><td></td><td></td></tr>
+            <tr><td>résistance mécanique</td><td></td><td></td><td></td></tr>
+            <tr><td>densité</td><td></td><td></td><td></td></tr>
+            <tr><td>grande série</td><td></td><td></td><td></td></tr>
+            <tr><td>géométrie complexe</td><td></td><td></td><td></td></tr>
           </tbody>
         </table>
       </div>
