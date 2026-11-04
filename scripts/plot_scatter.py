@@ -32,8 +32,8 @@ PLOTS = [
     ("cisaillement", "tbl-3", r"$F_{max}$ [N]", None),
     ("cisaillement_bfsp", "tbl-3", r"$F_{max}$ [N]", {"BFSP"}),
 ]
-HALF = 0.144
-WIDE_ALPHA = 0.8     # mean / single-measurement lines
+HALF = 0.12
+WIDE_ALPHA = 0.9     # mean / single-measurement lines
 MEAN_HALF = 0.28
 COLORS = {"BFSP": "#42affa", "BBox": "#ff9f43", "BF main": "#4cd97b"}
 THEMES = {
@@ -60,7 +60,7 @@ class MeasureHandler(HandlerBase):
         artists = [line]
         if self.dot_pos is not None:
             dx = x0 + self.dot_pos * (x1 - x0)
-            artists.append(Line2D([dx], [cy], marker="o", markersize=5, linestyle="",
+            artists.append(Line2D([dx], [cy], marker="o", markersize=6, linestyle="",
                                   color=self.color, alpha=self.dot_alpha, markeredgewidth=0,
                                   transform=trans))
         return artists
@@ -113,7 +113,7 @@ for out_name, table_id, label, keep in PLOTS:
                 small = tone(col, 0.4, c["bg"])
                 for dot_x, v in zip((x - HALF, x, x + HALF), vals):
                     ax.hlines(v, x - HALF, x + HALF, color=small, linewidth=1.6, zorder=3)
-                    ax.scatter(dot_x, v, s=30, color=small, linewidths=0, zorder=3)
+                    ax.scatter(dot_x, v, s=42, color=small, linewidths=0, zorder=3)
                 # only these samples have several measurements, hence a mean
                 ax.hlines(mean, x - MEAN_HALF, x + MEAN_HALF,
                           color=tone(col, WIDE_ALPHA, c["bg"]), linewidth=1.6, zorder=5)
