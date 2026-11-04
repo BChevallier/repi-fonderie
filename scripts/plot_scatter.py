@@ -61,8 +61,9 @@ for q, (table_id, label) in QUANTITIES.items():
             ax.scatter(x, v, s=110, color=col, zorder=3)
             if name.startswith("BFSP"):
                 vals = raw[q][int(name.split()[1])]
-                ax.scatter([x - 0.15, x, x + 0.15], vals, s=28, marker=".", color=col,
-                           alpha=0.7, zorder=4)
+                for dx, letter, v in zip((-0.27, 0, 0.27), "FMD", vals):
+                    ax.text(x + dx, v, letter, color=col, alpha=0.7, fontsize=16,
+                            fontweight="bold", ha="center", va="center", zorder=4)
         ax.set_xticks(range(len(pts)), [n for n, _ in pts], rotation=40, ha="right",
                       color=c["fg"], fontsize=11)
         ax.tick_params(axis="y", colors=c["fg"], labelsize=11)
@@ -80,8 +81,7 @@ for q, (table_id, label) in QUANTITIES.items():
                    for g, col in COLORS.items()]
         handles += [Line2D([], [], marker="o", linestyle="", color=c["muted"], markersize=8,
                            label="moyenne"),
-                    Line2D([], [], marker="^", linestyle="", color=c["muted"], alpha=0.7,
-                           markersize=5, label="valeurs mesurées (BFSP)")]
+                    Line2D([], [], linestyle="", label="F fond · M milieu · D devant")]
         ax.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=5,
                   frameon=False, fontsize=11, labelcolor=c["fg"])
         fig.tight_layout()
