@@ -1,0 +1,19 @@
+quantity,sample,fond,milieu,devant
+masse,BFSP 1 bar,135,134.5,135.5
+masse,BFSP 2 bar,140,140,140.5
+masse,BFSP 3 bar,141.5,141.5,142
+masse,BFSP 4 bar,142,141.5,143
+masse,BFSP 5 bar,142.5,142.5,142.5
+masse,BFSP 6 bar,143,143.5,143.5
+permeabilite,BFSP 1 bar,320,310,300
+permeabilite,BFSP 2 bar,240,235,235
+permeabilite,BFSP 3 bar,260,211,212
+permeabilite,BFSP 4 bar,200,201,201
+permeabilite,BFSP 5 bar,212,211,191
+permeabilite,BFSP 6 bar,190,201,190
+cisaillement,BFSP 1 bar,630,783,605
+cisaillement,BFSP 2 bar,715,739,759
+cisaillement,BFSP 3 bar,917,1018,1028
+cisaillement,BFSP 4 bar,835,901,704
+cisaillement,BFSP 5 bar,1171,783,600
+cisaillement,BFSP 6 bar,1090,1112,1280

@@ -1,9 +1,13 @@
 """Scatterplots for Tableau 1-3 (masse, permeabilite, cisaillement), light + dark.
 
-One dot per sample (the mean), read from the first tbl-1 / tbl-2 / tbl-3 table in index.html
-so the slides and the plots share one source. Colour = method (BFSP, BBox, BF main).
-BFSP raw (non averaged) values from data/bfsp_raw.csv are added as small triangles.
-Writes figures/{masse,permeabilite,cisaillement}_{light,dark}.png.
+Big dot = mean per sample, read from the first tbl-1 / tbl-2 / tbl-3 table in index.html.
+Where data/raw.csv has the three measurements (fond, milieu, devant) for a sample, a
+translucent bar spans min-max and three tiny dots mark the individual values.
+Colour = method (BFSP, BBox, BF main).
+
+Writes figures/{masse,permeabilite,cisaillement}_{light,dark}.png and
+figures/cisaillement_bfsp_{light,dark}.png (BFSP only, so the y axis is not stretched
+by the other methods).
 """
 import csv
 import re
@@ -17,11 +21,13 @@ from matplotlib.lines import Line2D
 root = Path(__file__).resolve().parent.parent
 html = (root / "index.html").read_text()
 
-QUANTITIES = {
-    "masse": ("tbl-1", "Masse [g]"),
-    "permeabilite": ("tbl-2", "Perméabilité [GF]"),
-    "cisaillement": ("tbl-3", r"$\tau_{max}$ [N]"),
-}
+# (output name, table id, y label, methods kept)
+PLOTS = [
+    ("masse", "tbl-1", "Masse [g]", None),
+    ("permeabilite", "tbl-2", "Perméabilité [GF]", None),
+    ("cisaillement", "tbl-3", r"$F_{max}$ [N]", None),
+    ("cisaillement_bfsp", "tbl-3", r"$F_{max}$ [N]", {"BFSP"}),
+]
 COLORS = {"BFSP": "#42affa", "BBox": "#ff9f43", "BF main": "#4cd97b"}
 THEMES = {
     "dark": dict(bg="#000000", fg="#ffffff", muted="#898781", grid=(1, 1, 1, 0.12)),
@@ -41,9 +47,9 @@ def read_table(table_id):
 
 
 raw = {}
-with open(root / "data" / "bfsp_raw.csv") as f:
+with open(root / "data" / "raw.csv") as f:
     for r in csv.DictReader(f):
-        raw.setdefault(r["quantity"], {})[int(r["pression"])] = [
+        raw.setdefault(r["quantity"], {})[r["sample"]] = [
             float(r[p]) for p in ("fond", "milieu", "devant")]
 
 
@@ -51,19 +57,20 @@ def group_of(name):
     return next(g for g in ("BFSP", "BBox", "BF main") if name.startswith(g))
 
 
-for q, (table_id, label) in QUANTITIES.items():
-    pts = read_table(table_id)
+for out_name, table_id, label, keep in PLOTS:
+    q = out_name.split("_")[0]
+    pts = [p for p in read_table(table_id) if keep is None or group_of(p[0]) in keep]
     for theme, c in THEMES.items():
         fig, ax = plt.subplots(figsize=(9, 5.4), dpi=200, facecolor=c["bg"])
         ax.set_facecolor(c["bg"])
-        for x, (name, v) in enumerate(pts):
+        for x, (name, mean) in enumerate(pts):
             col = COLORS[group_of(name)]
-            ax.scatter(x, v, s=110, color=col, zorder=3)
-            if name.startswith("BFSP"):
-                vals = raw[q][int(name.split()[1])]
-                for dx, letter, v in zip((-0.27, 0, 0.27), "FMD", vals):
-                    ax.text(x + dx, v, letter, color="red", alpha=0.7, fontsize=12,
-                            fontweight="bold", ha="center", va="center", zorder=4)
+            vals = raw.get(q, {}).get(name)
+            if vals:
+                ax.vlines(x, min(vals), max(vals), color=col, alpha=0.35, linewidth=10,
+                          capstyle="round", zorder=2)
+                ax.scatter([x] * 3, vals, s=14, color=col, zorder=4)
+            ax.scatter(x, mean, s=110, color=col, edgecolor=c["bg"], linewidth=1.5, zorder=5)
         ax.set_xticks(range(len(pts)), [n for n, _ in pts], rotation=40, ha="right",
                       color=c["fg"], fontsize=11)
         ax.tick_params(axis="y", colors=c["fg"], labelsize=11)
@@ -78,13 +85,15 @@ for q, (table_id, label) in QUANTITIES.items():
         ax.set_xlim(-0.6, len(pts) - 0.4)
         ax.margins(y=0.1)
         handles = [Line2D([], [], marker="o", linestyle="", color=col, label=g)
-                   for g, col in COLORS.items()]
-        handles += [Line2D([], [], marker="o", linestyle="", color=c["muted"], markersize=8,
+                   for g, col in COLORS.items() if keep is None or g in keep]
+        handles += [Line2D([], [], marker="o", linestyle="", color=c["muted"], markersize=9,
                            label="moyenne"),
-                    Line2D([], [], linestyle="", label="F fond · M milieu · D devant")]
-        ax.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=5,
-                  frameon=False, fontsize=11, labelcolor=c["fg"])
+                    Line2D([], [], color=c["muted"], alpha=0.5, linewidth=8,
+                           solid_capstyle="round", label="min–max (fond, milieu, devant)")]
+        ax.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.5, 1.0),
+                  ncol=len(handles), frameon=False, fontsize=10, labelcolor=c["fg"],
+                  columnspacing=1.2, handletextpad=0.4)
         fig.tight_layout()
-        fig.savefig(root / "figures" / f"{q}_{theme}.png", facecolor=c["bg"])
+        fig.savefig(root / "figures" / f"{out_name}_{theme}.png", facecolor=c["bg"])
         plt.close(fig)
-    print(q, pts)
+    print(out_name, pts)
