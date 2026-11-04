@@ -18,6 +18,7 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.colors import to_rgb
 from matplotlib.legend_handler import HandlerBase
 from matplotlib.lines import Line2D
 
@@ -32,7 +33,6 @@ PLOTS = [
     ("cisaillement_bfsp", "tbl-3", r"$F_{max}$ [N]", {"BFSP"}),
 ]
 HALF = 0.144
-DOT_ALPHA = 0.4      # same as the small lines
 WIDE_ALPHA = 0.8     # mean / single-measurement lines
 MEAN_HALF = 0.28
 COLORS = {"BFSP": "#42affa", "BBox": "#ff9f43", "BF main": "#4cd97b"}
@@ -64,6 +64,16 @@ class MeasureHandler(HandlerBase):
                                   color=self.color, alpha=self.dot_alpha, markeredgewidth=0,
                                   transform=trans))
         return artists
+
+
+def tone(color, alpha, bg):
+    """Opaque colour that looks like `color` at `alpha` on `bg`.
+
+    Drawing the line and its dot in the same opaque tone (instead of two translucent
+    layers) stops the overlap from looking darker or brighter than the rest.
+    """
+    fg, b = to_rgb(color), to_rgb(bg)
+    return tuple(alpha * f + (1 - alpha) * g for f, g in zip(fg, b))
 
 
 def read_table(table_id):
@@ -100,17 +110,17 @@ for out_name, table_id, label, keep in PLOTS:
             if vals:
                 # one short horizontal line per measurement; the dot sits on its left
                 # (fond), middle (milieu) or right (devant) end
+                small = tone(col, 0.4, c["bg"])
                 for dot_x, v in zip((x - HALF, x, x + HALF), vals):
-                    ax.hlines(v, x - HALF, x + HALF, color=col, linewidth=1.6, alpha=0.4,
-                              zorder=3)
-                    ax.scatter(dot_x, v, s=30, color=col, alpha=DOT_ALPHA, linewidths=0, zorder=4)
+                    ax.hlines(v, x - HALF, x + HALF, color=small, linewidth=1.6, zorder=3)
+                    ax.scatter(dot_x, v, s=30, color=small, linewidths=0, zorder=3)
                 # only these samples have several measurements, hence a mean
-                ax.hlines(mean, x - MEAN_HALF, x + MEAN_HALF, color=col, linewidth=1.6,
-                          alpha=WIDE_ALPHA, zorder=3)
+                ax.hlines(mean, x - MEAN_HALF, x + MEAN_HALF,
+                          color=tone(col, WIDE_ALPHA, c["bg"]), linewidth=1.6, zorder=5)
             else:
                 # single measurement: drawn exactly like a BFSP mean line
-                ax.hlines(mean, x - MEAN_HALF, x + MEAN_HALF, color=col, linewidth=1.6,
-                          alpha=WIDE_ALPHA, zorder=3)
+                ax.hlines(mean, x - MEAN_HALF, x + MEAN_HALF,
+                          color=tone(col, WIDE_ALPHA, c["bg"]), linewidth=1.6, zorder=5)
         ax.set_xticks(range(len(pts)), [n for n, _ in pts], rotation=40, ha="right",
                       color=c["fg"], fontsize=11)
         ax.tick_params(axis="y", colors=c["fg"], labelsize=11)
@@ -125,16 +135,17 @@ for out_name, table_id, label, keep in PLOTS:
         ax.set_xlim(-0.6, len(pts) - 0.4)
         ax.margins(y=0.1)
         # legend glyphs are drawn exactly like the plot lines (same weight, same alpha)
-        entries = [(g, None, 0.5, col, WIDE_ALPHA) for g, col in COLORS.items()
+        entries = [(g, None, 0.5, tone(col, WIDE_ALPHA, c["bg"]), 1) for g, col in COLORS.items()
                    if keep is None or g in keep]
-        entries += [("fond", 0.0, 0.3, c["muted"], 0.4), ("milieu", 0.5, 0.3, c["muted"], 0.4),
-                    ("devant", 1.0, 0.3, c["muted"], 0.4)]
+        grey = tone(c["muted"], 0.4, c["bg"])
+        entries += [("fond", 0.0, 0.3, grey, 1), ("milieu", 0.5, 0.3, grey, 1),
+                    ("devant", 1.0, 0.3, grey, 1)]
         handles, hmap = [], {}
         for label, dot_pos, half, color, alpha in entries:
             h = Line2D([], [], label=label)
             handles.append(h)
             hmap[h] = MeasureHandler(dot_pos, half=half, color=color, alpha=alpha,
-                                     dot_alpha=DOT_ALPHA)
+                                     dot_alpha=1)
         ax.legend(handles=handles, handler_map=hmap, loc="lower center",
                   bbox_to_anchor=(0.5, 1.0), ncol=len(handles), frameon=False, fontsize=10,
                   labelcolor=c["fg"], columnspacing=1.6, handletextpad=0.5, handlelength=2.4)
