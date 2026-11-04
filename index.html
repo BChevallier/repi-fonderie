@@ -63,6 +63,8 @@
     .reveal .r-stack { width: 100%; justify-items: center; }
     .reveal .r-stack img { width: 905px; max-width: none; max-height: none; margin: 0; }
     .empty-table td, .empty-table th { height: 2.2em; width: 25%; }
+    .reveal a.table-link { display: block; color: inherit; text-decoration: none; }
+    .reveal a.table-link:hover table { filter: brightness(1.25); }
     .title-slide .date { margin-top: auto; margin-bottom: 0.5em; font-size: 0.5em; color: var(--muted); }
   </style>
 </head>
@@ -114,6 +116,7 @@
       <h2 data-id="comp-title" style="font-size:1.6em">Comparaison</h2>
       <div class="tables-row">
         <div>
+        <a class="table-link" href="#/tableau-1">
         <table data-id="tbl-1">
           <thead><tr><th>Échantillon</th><th>Masse [g]</th></tr></thead>
           <tbody>
@@ -129,8 +132,10 @@
             <tr><td>BF main 2%</td><td>151,5</td></tr>
           </tbody>
         </table>
+        </a>
         </div>
         <div>
+        <a class="table-link" href="#/tableau-2">
         <table data-id="tbl-2">
           <thead><tr><th>Échantillon</th><th>Perméabilité [GF]</th></tr></thead>
           <tbody>
@@ -146,8 +151,10 @@
             <tr><td>BF main 2%</td><td>235,5</td></tr>
           </tbody>
         </table>
+        </a>
         </div>
         <div>
+        <a class="table-link" href="#/tableau-3">
         <table data-id="tbl-3">
           <thead><tr><th>Échantillon</th><th>\(F_{max}\) [N]</th></tr></thead>
           <tbody>
@@ -163,6 +170,7 @@
             <tr><td>BF main 2%</td><td>5 226</td></tr>
           </tbody>
         </table>
+        </a>
         </div>
       </div>
       <aside class="notes"><p>[...]</p></aside>
@@ -170,7 +178,7 @@
 
     <!-- Tableau 1: scatterplot of Masse [g] per sample (scripts/plot_scatter.py), notes on the slide below -->
     <section>
-      <section class="centered">
+      <section class="centered" id="tableau-1">
         <figure>
           <img src="figures/masse_dark.png?v=19" alt="Nuage de points de la masse en grammes par échantillon : BFSP 1 à 6 bar de 135 à 143 g, BBox 1 et 2 vers 149 g, BF main 1 % et 2 % vers 152 g.">
         </figure>
@@ -188,7 +196,7 @@
 
     <!-- Tableau 2: scatterplot (scripts/plot_scatter.py), notes on the slide below -->
     <section>
-      <section class="centered">
+      <section class="centered" id="tableau-2">
         <figure>
           <img src="figures/permeabilite_dark.png?v=19" alt="Nuage de points de la perméabilité par échantillon : BFSP de 310 à 193, BBox 180 et 210, BF main 149,5 et 235,5.">
         </figure>
@@ -206,7 +214,7 @@
 
     <!-- Tableau 3: scatterplot (scripts/plot_scatter.py), notes on the slide below -->
     <section>
-      <section class="centered">
+      <section class="centered" id="tableau-3">
         <!-- first image fades out when the BFSP-only plot (own y axis) fades in -->
         <div class="r-stack">
           <img class="fragment fade-out" data-fragment-index="0" src="figures/cisaillement_dark.png?v=19" alt="Nuage de points de la force maximale en newtons par échantillon : BFSP de 673 à 1161, BBox 411 et 431, BF main 1834 et 5226.">
