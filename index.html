@@ -68,6 +68,8 @@
     .empty-table th:not(:first-child), .empty-table td:not(:first-child) { text-align: center; }
     /* vertical divider between column 1 and 2 */
     .empty-table th:first-child, .empty-table td:first-child { border-right: 1px solid rgba(255,255,255,0.25); }
+    /* tall (portrait) photos must stay inside the 700px slide; landscape plots are unaffected */
+    .reveal figure img { max-height: 660px; }
     .reveal a.table-link { display: block; color: inherit; text-decoration: none; }
     .reveal a.table-link:hover table { filter: brightness(1.25); }
     .title-slide .date { margin-top: auto; margin-bottom: 0.5em; font-size: 0.5em; color: var(--muted); }
@@ -100,15 +102,23 @@
       <h2>Courbes théoriques</h2>
     </section>
 
-    <!-- Idealised force-displacement curves for pressures 1-6 bar (scripts/plot_theory.py) -->
-    <section class="centered">
+    <!-- Theoretical curves M, R, P against P_tir (scripts/plot_theory.py); photo of the whiteboard sketch on the slide below -->
+    <section>
+      <section class="centered">
       <figure>
-        <img src="figures/courbes_theoriques_dark.png?v=20" alt="Courbes théoriques en fonction de la pression de tir : la masse M monte vite puis se stabilise ; la résistance R monte, passe par un maximum puis redescend (pointillés : la suite sans chute) ; la perméabilité P chute fortement puis lentement.">
+        <img src="figures/courbes_theoriques_dark.png?v=21" alt="Courbes théoriques en fonction de la pression de tir : la masse M monte vite puis se stabilise ; la résistance R monte, passe par un maximum puis redescend (pointillés : la suite sans chute) ; la perméabilité P chute fortement puis lentement.">
       </figure>
       <aside class="notes">
         <p class="fact">Courbes qualitatives redessinées à partir du schéma au tableau, pas des mesures. M : masse, R : résistance, P : perméabilité, en fonction de la pression de tir P_tir.</p>
         <p>[...]</p>
       </aside>
+      </section>
+      <section class="centered">
+        <figure>
+          <img src="figures/courbes_schema_tableau.jpg" alt="Photo d'un écran blanc sur lequel est dessiné le schéma : trois courbes M (bleue), R (rouge, avec une partie en pointillés) et P (verte) en fonction de P_tir.">
+        </figure>
+        <aside class="notes"><p>[...]</p></aside>
+      </section>
     </section>
 
     <!-- Valeur expérimentale: divider that morphs into the overview title -->
@@ -185,7 +195,7 @@
     <section>
       <section class="centered" id="tableau-1">
         <figure>
-          <img src="figures/masse_dark.png?v=20" alt="Nuage de points de la masse en grammes par échantillon : BFSP 1 à 6 bar de 135 à 143 g, BBox 1 et 2 vers 149 g, BF main 1 % et 2 % vers 152 g.">
+          <img src="figures/masse_dark.png?v=21" alt="Nuage de points de la masse en grammes par échantillon : BFSP 1 à 6 bar de 135 à 143 g, BBox 1 et 2 vers 149 g, BF main 1 % et 2 % vers 152 g.">
         </figure>
         <aside class="notes"><p>[...]</p></aside>
       </section>
@@ -203,7 +213,7 @@
     <section>
       <section class="centered" id="tableau-2">
         <figure>
-          <img src="figures/permeabilite_dark.png?v=20" alt="Nuage de points de la perméabilité par échantillon : BFSP de 310 à 193, BBox 180 et 210, BF main 149,5 et 235,5.">
+          <img src="figures/permeabilite_dark.png?v=21" alt="Nuage de points de la perméabilité par échantillon : BFSP de 310 à 193, BBox 180 et 210, BF main 149,5 et 235,5.">
         </figure>
         <aside class="notes"><p>[...]</p></aside>
       </section>
@@ -222,8 +232,8 @@
       <section class="centered" id="tableau-3">
         <!-- first image fades out when the BFSP-only plot (own y axis) fades in -->
         <div class="r-stack">
-          <img class="fragment fade-out" data-fragment-index="0" src="figures/cisaillement_dark.png?v=20" alt="Nuage de points de la force maximale en newtons par échantillon : BFSP de 673 à 1161, BBox 411 et 431, BF main 1834 et 5226.">
-          <img class="fragment" data-fragment-index="0" src="figures/cisaillement_bfsp_dark.png?v=20" alt="Même nuage de points, limité à BFSP 1 à 6 bar, avec un axe vertical plus resserré.">
+          <img class="fragment fade-out" data-fragment-index="0" src="figures/cisaillement_dark.png?v=21" alt="Nuage de points de la force maximale en newtons par échantillon : BFSP de 673 à 1161, BBox 411 et 431, BF main 1834 et 5226.">
+          <img class="fragment" data-fragment-index="0" src="figures/cisaillement_bfsp_dark.png?v=21" alt="Même nuage de points, limité à BFSP 1 à 6 bar, avec un axe vertical plus resserré.">
         </div>
         <aside class="notes"><p>[...]</p></aside>
       </section>
