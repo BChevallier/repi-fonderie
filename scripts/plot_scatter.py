@@ -32,6 +32,8 @@ PLOTS = [
     ("cisaillement_bfsp", "tbl-3", r"$F_{max}$ [N]", {"BFSP"}),
 ]
 HALF = 0.144
+DOT_ALPHA = 0.4      # same as the small lines
+WIDE_ALPHA = 0.8     # mean / single-measurement lines
 MEAN_HALF = 0.28
 COLORS = {"BFSP": "#42affa", "BBox": "#ff9f43", "BF main": "#4cd97b"}
 THEMES = {
@@ -43,9 +45,10 @@ THEMES = {
 class MeasureHandler(HandlerBase):
     """Legend glyph identical to the plot: short line with a dot at left/middle/right."""
 
-    def __init__(self, dot_pos, half=0.36, alpha=0.4, lw=1.6, color="grey"):
+    def __init__(self, dot_pos, half=0.36, alpha=0.4, lw=1.6, color="grey", dot_alpha=0.4):
         super().__init__()
         self.dot_pos, self.half, self.alpha, self.lw, self.color = dot_pos, half, alpha, lw, color
+        self.dot_alpha = dot_alpha
 
     def create_artists(self, legend, orig_handle, xdescent, ydescent, width, height,
                        fontsize, trans):
@@ -58,7 +61,8 @@ class MeasureHandler(HandlerBase):
         if self.dot_pos is not None:
             dx = x0 + self.dot_pos * (x1 - x0)
             artists.append(Line2D([dx], [cy], marker="o", markersize=5, linestyle="",
-                                  color=self.color, transform=trans))
+                                  color=self.color, alpha=self.dot_alpha, markeredgewidth=0,
+                                  transform=trans))
         return artists
 
 
@@ -99,14 +103,14 @@ for out_name, table_id, label, keep in PLOTS:
                 for dot_x, v in zip((x - HALF, x, x + HALF), vals):
                     ax.hlines(v, x - HALF, x + HALF, color=col, linewidth=1.6, alpha=0.4,
                               zorder=3)
-                    ax.scatter(dot_x, v, s=30, color=col, zorder=4)
+                    ax.scatter(dot_x, v, s=30, color=col, alpha=DOT_ALPHA, linewidths=0, zorder=4)
                 # only these samples have several measurements, hence a mean
                 ax.hlines(mean, x - MEAN_HALF, x + MEAN_HALF, color=col, linewidth=1.6,
-                          alpha=0.4, zorder=3)
+                          alpha=WIDE_ALPHA, zorder=3)
             else:
                 # single measurement: drawn exactly like a BFSP mean line
                 ax.hlines(mean, x - MEAN_HALF, x + MEAN_HALF, color=col, linewidth=1.6,
-                          alpha=0.4, zorder=3)
+                          alpha=WIDE_ALPHA, zorder=3)
         ax.set_xticks(range(len(pts)), [n for n, _ in pts], rotation=40, ha="right",
                       color=c["fg"], fontsize=11)
         ax.tick_params(axis="y", colors=c["fg"], labelsize=11)
@@ -121,15 +125,16 @@ for out_name, table_id, label, keep in PLOTS:
         ax.set_xlim(-0.6, len(pts) - 0.4)
         ax.margins(y=0.1)
         # legend glyphs are drawn exactly like the plot lines (same weight, same alpha)
-        entries = [(g, None, 0.5, col) for g, col in COLORS.items()
+        entries = [(g, None, 0.5, col, WIDE_ALPHA) for g, col in COLORS.items()
                    if keep is None or g in keep]
-        entries += [("fond", 0.0, 0.3, c["muted"]), ("milieu", 0.5, 0.3, c["muted"]),
-                    ("devant", 1.0, 0.3, c["muted"])]
+        entries += [("fond", 0.0, 0.3, c["muted"], 0.4), ("milieu", 0.5, 0.3, c["muted"], 0.4),
+                    ("devant", 1.0, 0.3, c["muted"], 0.4)]
         handles, hmap = [], {}
-        for label, dot_pos, half, color in entries:
+        for label, dot_pos, half, color, alpha in entries:
             h = Line2D([], [], label=label)
             handles.append(h)
-            hmap[h] = MeasureHandler(dot_pos, half=half, color=color)
+            hmap[h] = MeasureHandler(dot_pos, half=half, color=color, alpha=alpha,
+                                     dot_alpha=DOT_ALPHA)
         ax.legend(handles=handles, handler_map=hmap, loc="lower center",
                   bbox_to_anchor=(0.5, 1.0), ncol=len(handles), frameon=False, fontsize=10,
                   labelcolor=c["fg"], columnspacing=1.6, handletextpad=0.5, handlelength=2.4)
