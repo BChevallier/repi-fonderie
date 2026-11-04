@@ -1,9 +1,11 @@
 """Scatterplots for Tableau 1-3 (masse, permeabilite, cisaillement), light + dark.
 
-One dot per sample, read from the first tbl-1 / tbl-2 / tbl-3 table in index.html
+One dot per sample (the mean), read from the first tbl-1 / tbl-2 / tbl-3 table in index.html
 so the slides and the plots share one source. Colour = method (BFSP, BBox, BF main).
+BFSP raw (non averaged) values from data/bfsp_raw.csv are added as small triangles.
 Writes figures/{masse,permeabilite,cisaillement}_{light,dark}.png.
 """
+import csv
 import re
 from pathlib import Path
 
@@ -38,6 +40,13 @@ def read_table(table_id):
     return out
 
 
+raw = {}
+with open(root / "data" / "bfsp_raw.csv") as f:
+    for r in csv.DictReader(f):
+        raw.setdefault(r["quantity"], {})[int(r["pression"])] = [
+            float(r[p]) for p in ("fond", "milieu", "devant")]
+
+
 def group_of(name):
     return next(g for g in ("BFSP", "BBox", "BF main") if name.startswith(g))
 
@@ -48,7 +57,12 @@ for q, (table_id, label) in QUANTITIES.items():
         fig, ax = plt.subplots(figsize=(9, 5.4), dpi=200, facecolor=c["bg"])
         ax.set_facecolor(c["bg"])
         for x, (name, v) in enumerate(pts):
-            ax.scatter(x, v, s=110, color=COLORS[group_of(name)], zorder=3)
+            col = COLORS[group_of(name)]
+            ax.scatter(x, v, s=110, color=col, zorder=3)
+            if name.startswith("BFSP"):
+                vals = raw[q][int(name.split()[1])]
+                ax.scatter([x - 0.15, x, x + 0.15], vals, s=28, marker="^", color=col,
+                           alpha=0.7, zorder=4)
         ax.set_xticks(range(len(pts)), [n for n, _ in pts], rotation=40, ha="right",
                       color=c["fg"], fontsize=11)
         ax.tick_params(axis="y", colors=c["fg"], labelsize=11)
@@ -63,7 +77,11 @@ for q, (table_id, label) in QUANTITIES.items():
         ax.set_xlim(-0.6, len(pts) - 0.4)
         handles = [Line2D([], [], marker="o", linestyle="", color=col, label=g)
                    for g, col in COLORS.items()]
-        ax.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=3,
+        handles += [Line2D([], [], marker="o", linestyle="", color=c["muted"], markersize=8,
+                           label="moyenne"),
+                    Line2D([], [], marker="^", linestyle="", color=c["muted"], alpha=0.7,
+                           markersize=5, label="valeurs mesurées (BFSP)")]
+        ax.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=5,
                   frameon=False, fontsize=11, labelcolor=c["fg"])
         fig.tight_layout()
         fig.savefig(root / "figures" / f"{q}_{theme}.png", facecolor=c["bg"])
