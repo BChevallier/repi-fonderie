@@ -29,7 +29,7 @@ PLOTS = [
     ("cisaillement", "tbl-3", r"$F_{max}$ [N]", None),
     ("cisaillement_bfsp", "tbl-3", r"$F_{max}$ [N]", {"BFSP"}),
 ]
-HALF = 0.28
+HALF = 0.18
 COLORS = {"BFSP": "#42affa", "BBox": "#ff9f43", "BF main": "#4cd97b"}
 THEMES = {
     "dark": dict(bg="#000000", fg="#ffffff", muted="#898781", grid=(1, 1, 1, 0.12)),
@@ -72,9 +72,9 @@ for out_name, table_id, label, keep in PLOTS:
                 # one short horizontal line per measurement; the dot sits on its left
                 # (fond), middle (milieu) or right (devant) end
                 for dot_x, v in zip((x - HALF, x, x + HALF), vals):
-                    ax.hlines(v, x - HALF, x + HALF, color=col, linewidth=1.6, alpha=0.8,
+                    ax.hlines(v, x - HALF, x + HALF, color=col, linewidth=1.6, alpha=0.4,
                               zorder=3)
-                    ax.scatter(dot_x, v, s=16, color=col, zorder=4)
+                    ax.scatter(dot_x, v, s=30, color=col, zorder=4)
             ax.scatter(x, mean, s=110, color=col, edgecolor=c["bg"], linewidth=1.5, zorder=5)
         ax.set_xticks(range(len(pts)), [n for n, _ in pts], rotation=40, ha="right",
                       color=c["fg"], fontsize=11)
@@ -91,9 +91,7 @@ for out_name, table_id, label, keep in PLOTS:
         ax.margins(y=0.1)
         handles = [Line2D([], [], marker="o", linestyle="", color=col, label=g)
                    for g, col in COLORS.items() if keep is None or g in keep]
-        handles += [Line2D([], [], marker="o", linestyle="", color=c["muted"], markersize=9,
-                           label="moyenne"),
-                    Line2D([], [], marker="_", markersize=14, linestyle="", color=c["muted"],
+        handles += [Line2D([], [], marker="_", markersize=14, linestyle="", color=c["muted"],
                            label="mesure : point à gauche = fond, milieu, droite = devant")]
         ax.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.5, 1.0),
                   ncol=len(handles), frameon=False, fontsize=10, labelcolor=c["fg"],
