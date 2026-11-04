@@ -34,7 +34,7 @@ PLOTS = [
 ]
 HALF = 0.10
 WIDE_ALPHA = 0.97    # mean / single-measurement lines
-MEAN_HALF = 0.28
+MEAN_HALF = 0.224
 COLORS = {"BFSP": "#42affa", "BBox": "#ff9f43", "BF main": "#4cd97b"}
 THEMES = {
     "dark": dict(bg="#000000", fg="#ffffff", muted="#898781", grid=(1, 1, 1, 0.12)),
@@ -135,7 +135,7 @@ for out_name, table_id, label, keep in PLOTS:
         ax.set_xlim(-0.6, len(pts) - 0.4)
         ax.margins(y=0.1)
         # legend glyphs are drawn exactly like the plot lines (same weight, same alpha)
-        entries = [(g, None, 0.5, tone(col, WIDE_ALPHA, c["bg"]), 1) for g, col in COLORS.items()
+        entries = [(g, None, 0.4, tone(col, WIDE_ALPHA, c["bg"]), 1) for g, col in COLORS.items()
                    if keep is None or g in keep]
         grey = tone(c["muted"], 0.4, c["bg"])
         entries += [("fond", 0.0, 0.3, grey, 1), ("milieu", 0.5, 0.3, grey, 1),
