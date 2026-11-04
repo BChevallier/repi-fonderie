@@ -17,6 +17,7 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.legend_handler import HandlerBase
 from matplotlib.lines import Line2D
 
 root = Path(__file__).resolve().parent.parent
@@ -36,6 +37,28 @@ THEMES = {
     "dark": dict(bg="#000000", fg="#ffffff", muted="#898781", grid=(1, 1, 1, 0.12)),
     "light": dict(bg="#ffffff", fg="#111111", muted="#6b6b6b", grid=(0, 0, 0, 0.12)),
 }
+
+
+class MeasureHandler(HandlerBase):
+    """Legend glyph identical to the plot: short line with a dot at left/middle/right."""
+
+    def __init__(self, dot_pos, half=0.36, alpha=0.4, lw=1.6, color="grey"):
+        super().__init__()
+        self.dot_pos, self.half, self.alpha, self.lw, self.color = dot_pos, half, alpha, lw, color
+
+    def create_artists(self, legend, orig_handle, xdescent, ydescent, width, height,
+                       fontsize, trans):
+        cy = height / 2 - ydescent
+        mid = xdescent + width / 2
+        x0, x1 = mid - self.half * width, mid + self.half * width
+        line = Line2D([x0, x1], [cy, cy], color=self.color, alpha=self.alpha,
+                      linewidth=self.lw, transform=trans)
+        artists = [line]
+        if self.dot_pos is not None:
+            dx = x0 + self.dot_pos * (x1 - x0)
+            artists.append(Line2D([dx], [cy], marker="o", markersize=5, linestyle="",
+                                  color=self.color, transform=trans))
+        return artists
 
 
 def read_table(table_id):
@@ -93,12 +116,16 @@ for out_name, table_id, label, keep in PLOTS:
         ax.margins(y=0.1)
         handles = [Line2D([], [], marker="o", linestyle="", color=col, label=g)
                    for g, col in COLORS.items() if keep is None or g in keep]
-        handles += [Line2D([], [], color=c["muted"], linewidth=1.6, alpha=0.4, label="moyenne"),
-                    Line2D([], [], marker="_", markersize=14, linestyle="", color=c["muted"],
-                           label="mesure : point à gauche = fond, milieu, droite = devant")]
-        ax.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.5, 1.0),
-                  ncol=len(handles), frameon=False, fontsize=10, labelcolor=c["fg"],
-                  columnspacing=1.8, handletextpad=0.5)
+        sym = [("moyenne", None, 0.5), ("fond", 0.0, 0.3), ("milieu", 0.5, 0.3),
+               ("devant", 1.0, 0.3)]
+        hmap = {}
+        for label, dot_pos, half in sym:
+            h = Line2D([], [], label=label)
+            handles.append(h)
+            hmap[h] = MeasureHandler(dot_pos, half=half, color=c["muted"])
+        ax.legend(handles=handles, handler_map=hmap, loc="lower center",
+                  bbox_to_anchor=(0.5, 1.0), ncol=len(handles), frameon=False, fontsize=10,
+                  labelcolor=c["fg"], columnspacing=1.6, handletextpad=0.5, handlelength=2.4)
         fig.tight_layout()
         fig.savefig(root / "figures" / f"{out_name}_{theme}.png", facecolor=c["bg"])
         plt.close(fig)
