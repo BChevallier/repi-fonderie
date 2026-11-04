@@ -4,7 +4,7 @@ Values come from the first tbl-1 / tbl-2 / tbl-3 table in index.html. Where data
 has the three measurements (fond, milieu, devant) -- BFSP only -- a short horizontal line is
 drawn per measurement, with a dot on its left / middle / right end for fond / milieu /
 devant, plus a wider line for the mean (the table value). The other samples (BBox, BF main)
-had a single measurement: one short line with a centred dot, no mean.
+had a single measurement: drawn as one wide line, styled like the BFSP mean.
 Colour = method (BFSP, BBox, BF main).
 
 Writes figures/{masse,permeabilite,cisaillement}_{light,dark}.png and
@@ -104,10 +104,9 @@ for out_name, table_id, label, keep in PLOTS:
                 ax.hlines(mean, x - MEAN_HALF, x + MEAN_HALF, color=col, linewidth=1.6,
                           alpha=0.4, zorder=3)
             else:
-                # single measurement: one short line, dot in the middle
-                ax.hlines(mean, x - HALF, x + HALF, color=col, linewidth=1.6, alpha=0.4,
-                          zorder=3)
-                ax.scatter(x, mean, s=30, color=col, zorder=4)
+                # single measurement: drawn exactly like a BFSP mean line
+                ax.hlines(mean, x - MEAN_HALF, x + MEAN_HALF, color=col, linewidth=1.6,
+                          alpha=0.4, zorder=3)
         ax.set_xticks(range(len(pts)), [n for n, _ in pts], rotation=40, ha="right",
                       color=c["fg"], fontsize=11)
         ax.tick_params(axis="y", colors=c["fg"], labelsize=11)
