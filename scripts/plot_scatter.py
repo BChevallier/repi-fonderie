@@ -62,7 +62,7 @@ for q, (table_id, label) in QUANTITIES.items():
             if name.startswith("BFSP"):
                 vals = raw[q][int(name.split()[1])]
                 for dx, letter, v in zip((-0.27, 0, 0.27), "FMD", vals):
-                    ax.text(x + dx, v, letter, color=col, alpha=0.7, fontsize=16,
+                    ax.text(x + dx, v, letter, color="red", alpha=0.7, fontsize=12,
                             fontweight="bold", ha="center", va="center", zorder=4)
         ax.set_xticks(range(len(pts)), [n for n, _ in pts], rotation=40, ha="right",
                       color=c["fg"], fontsize=11)
