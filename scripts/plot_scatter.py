@@ -1,6 +1,6 @@
 """Scatterplots for Tableau 1-3 (masse, permeabilite, cisaillement), light + dark.
 
-Big dot = mean per sample, read from the first tbl-1 / tbl-2 / tbl-3 table in index.html.
+Wide thick line = mean per sample, read from the first tbl-1 / tbl-2 / tbl-3 table in index.html.
 Where data/raw.csv has the three measurements (fond, milieu, devant) for a sample, a
 short horizontal line is drawn per measurement; a dot on its left / middle / right end
 marks fond / milieu / devant.
@@ -30,6 +30,7 @@ PLOTS = [
     ("cisaillement_bfsp", "tbl-3", r"$F_{max}$ [N]", {"BFSP"}),
 ]
 HALF = 0.18
+MEAN_HALF = 0.28
 COLORS = {"BFSP": "#42affa", "BBox": "#ff9f43", "BF main": "#4cd97b"}
 THEMES = {
     "dark": dict(bg="#000000", fg="#ffffff", muted="#898781", grid=(1, 1, 1, 0.12)),
@@ -75,7 +76,7 @@ for out_name, table_id, label, keep in PLOTS:
                     ax.hlines(v, x - HALF, x + HALF, color=col, linewidth=1.6, alpha=0.4,
                               zorder=3)
                     ax.scatter(dot_x, v, s=30, color=col, zorder=4)
-            ax.scatter(x, mean, s=110, color=col, edgecolor=c["bg"], linewidth=1.5, zorder=5)
+            ax.hlines(mean, x - MEAN_HALF, x + MEAN_HALF, color=col, linewidth=3.5, zorder=5)
         ax.set_xticks(range(len(pts)), [n for n, _ in pts], rotation=40, ha="right",
                       color=c["fg"], fontsize=11)
         ax.tick_params(axis="y", colors=c["fg"], labelsize=11)
@@ -91,11 +92,12 @@ for out_name, table_id, label, keep in PLOTS:
         ax.margins(y=0.1)
         handles = [Line2D([], [], marker="o", linestyle="", color=col, label=g)
                    for g, col in COLORS.items() if keep is None or g in keep]
-        handles += [Line2D([], [], marker="_", markersize=14, linestyle="", color=c["muted"],
+        handles += [Line2D([], [], color=c["muted"], linewidth=3.5, label="moyenne"),
+                    Line2D([], [], marker="_", markersize=14, linestyle="", color=c["muted"],
                            label="mesure : point à gauche = fond, milieu, droite = devant")]
         ax.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.5, 1.0),
                   ncol=len(handles), frameon=False, fontsize=10, labelcolor=c["fg"],
-                  columnspacing=1.2, handletextpad=0.4)
+                  columnspacing=1.8, handletextpad=0.5)
         fig.tight_layout()
         fig.savefig(root / "figures" / f"{out_name}_{theme}.png", facecolor=c["bg"])
         plt.close(fig)
